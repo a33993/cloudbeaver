@@ -43,19 +43,22 @@ jobs:
           git clone https://github.com/dbeaver/dbeaver-common.git ../dbeaver-common
           git clone https://github.com/dbeaver/dbeaver-jdbc-libsql.git ../dbeaver-jdbc-libsql || true
 
-      - name: Build and install upstream parent POMs
+      - name: Build and install upstream parent POMs (debug)
         run: |
           set -e
+          mkdir -p build/logs
           if [ -d "../dbeaver" ]; then
-            (cd ../dbeaver && mvn -T1C -DskipTests clean install -DskipTests)
+            (cd ../dbeaver && mvn -T1C -DskipTests -e -X clean install | tee ../cloudbeaver/build/logs/dbeaver-mvn.log)
           fi
           if [ -d "../dbeaver-common" ]; then
-            (cd ../dbeaver-common && mvn -T1C -DskipTests clean install -DskipTests)
+            (cd ../dbeaver-common && mvn -T1C -DskipTests -e -X clean install | tee ../cloudbeaver/build/logs/dbeaver-common-mvn.log)
           fi
 
-      - name: Build server (Maven)
+      - name: Build server (Maven) (debug)
         working-directory: server/product/aggregate
-        run: mvn clean verify -Dheadless-platform -DskipTests
+        run: |
+          mkdir -p ../../build/logs || true
+          mvn -e -X clean verify -Dheadless-platform -DskipTests | tee ../../build/logs/aggregate-mvn.log
 
       - name: Build frontend
         working-directory: webapp
@@ -80,6 +83,12 @@ jobs:
         run: |
           cd build
           zip -r cloudbeaver-windows-ready.zip cloudbeaver
+
+      - name: Upload Maven logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: maven-logs
+          path: build/logs/**/*
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
