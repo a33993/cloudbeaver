@@ -43,9 +43,10 @@ jobs:
 
       - name: Clone required upstream repos
         run: |
-          git clone https://github.com/dbeaver/dbeaver.git dbeaver
-          git clone https://github.com/dbeaver/dbeaver-common.git dbeaver-common
-          git clone https://github.com/dbeaver/dbeaver-jdbc-libsql.git dbeaver-jdbc-libsql || true
+          # Clone upstream repos into the parent workspace directory so aggregate POM finds them
+          git clone https://github.com/dbeaver/dbeaver.git ../dbeaver
+          git clone https://github.com/dbeaver/dbeaver-common.git ../dbeaver-common
+          git clone https://github.com/dbeaver/dbeaver-jdbc-libsql.git ../dbeaver-jdbc-libsql || true
 
       - name: Build server (Maven)
         working-directory: server/product/aggregate
