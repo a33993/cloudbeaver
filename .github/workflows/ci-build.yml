@@ -36,11 +36,6 @@ jobs:
         run: |
           corepack enable
           corepack prepare yarn@stable --activate
-
-      - name: Build server (Maven)
-        working-directory: server/product/aggregate
-        run: mvn clean verify -Dheadless-platform -DskipTests
-
       - name: Clone required upstream repos
         run: |
           # Clone upstream repos into the parent workspace directory so aggregate POM finds them
