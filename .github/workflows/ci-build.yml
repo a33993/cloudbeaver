@@ -43,6 +43,16 @@ jobs:
           git clone https://github.com/dbeaver/dbeaver-common.git ../dbeaver-common
           git clone https://github.com/dbeaver/dbeaver-jdbc-libsql.git ../dbeaver-jdbc-libsql || true
 
+      - name: Build and install upstream parent POMs
+        run: |
+          set -e
+          if [ -d "../dbeaver" ]; then
+            (cd ../dbeaver && mvn -T1C -DskipTests clean install -DskipTests)
+          fi
+          if [ -d "../dbeaver-common" ]; then
+            (cd ../dbeaver-common && mvn -T1C -DskipTests clean install -DskipTests)
+          fi
+
       - name: Build server (Maven)
         working-directory: server/product/aggregate
         run: mvn clean verify -Dheadless-platform -DskipTests
