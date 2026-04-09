@@ -22,8 +22,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Maven
-        name: Install Maven
+      - name: Install Maven
         run: |
           sudo apt-get update
           sudo apt-get install -y maven
@@ -37,6 +36,16 @@ jobs:
         run: |
           corepack enable
           corepack prepare yarn@stable --activate
+
+      - name: Build server (Maven)
+        working-directory: server/product/aggregate
+        run: mvn clean verify -Dheadless-platform -DskipTests
+
+      - name: Clone required upstream repos
+        run: |
+          git clone https://github.com/dbeaver/dbeaver.git dbeaver
+          git clone https://github.com/dbeaver/dbeaver-common.git dbeaver-common
+          git clone https://github.com/dbeaver/dbeaver-jdbc-libsql.git dbeaver-jdbc-libsql || true
 
       - name: Build server (Maven)
         working-directory: server/product/aggregate
